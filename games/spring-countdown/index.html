@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>春节倒计时</title>
+    <link rel="stylesheet" href="../../ui.css" />
+    <style>
+        #fireworks {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background: #0f0f0f;
+            color: #f5f5f5;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .muted {
+            color: rgba(245, 245, 245, 0.72);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .panel {
+            width: min(720px, 100%);
+            border: 1px solid rgba(245, 245, 245, 0.18);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .unit {
+            border: 1px solid rgba(245, 245, 245, 0.18);
+            background: rgba(0, 0, 0, 0.12);
+            padding: 12px 10px;
+            min-height: 72px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .value {
+            font-size: clamp(22px, 5.5vw, 34px);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: rgba(245, 245, 245, 0.72);
+            font-weight: 600;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .target {
+            font-weight: 600;
+        }
+
+        .btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .greeting {
+            display: none;
+            font-size: clamp(28px, 9vw, 56px);
+            font-weight: 800;
+            letter-spacing: 2px;
+            line-height: 1.1;
+            color: #ff2a2a;
+            text-shadow: 0 0 22px rgba(255, 42, 42, 0.25);
+        }
+
+        .final-countdown {
+            display: none;
+            font-size: clamp(48px, 18vw, 120px);
+            font-weight: 900;
+            letter-spacing: 2px;
+            line-height: 1;
+            color: rgba(245, 245, 245, 0.96);
+            text-shadow: 0 0 26px rgba(255, 255, 255, 0.18);
+            margin-bottom: 6px;
+        }
+
+        body.celebrate .header,
+        body.celebrate .panel,
+        body.celebrate .muted.note {
+            display: none;
+        }
+
+        body.celebrate .final-countdown {
+            display: none;
+        }
+
+        body.final5 .panel {
+            display: none;
+        }
+
+        body.celebrate .greeting {
+            display: block;
+        }
+
+        /* 庆祝时：让“春节快乐”位于最底层（在烟花画布下方） */
+        body.celebrate #fireworks {
+            z-index: 2;
+        }
+
+        body.celebrate .container {
+            z-index: 1;
+        }
+
+        button {
+            background: transparent;
+            border-color: rgba(245, 245, 245, 0.22);
+            color: #f5f5f5;
+        }
+
+        button:focus-visible {
+            outline: 2px solid rgba(245, 245, 245, 0.3);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 640px) {
+            .countdown {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="fireworks" aria-hidden="true"></canvas>
+    <div class="container">
+        <div class="final-countdown" id="finalCountdown" aria-live="assertive" aria-atomic="true"></div>
+        <div class="greeting" id="greeting" aria-live="polite">春节快乐</div>
+        <div class="header">
+            <h1>春节倒计时</h1>
+            <div class="muted" id="nowText">—</div>
+        </div>
+
+        <div class="panel">
+            <div class="row">
+                <div>
+                    <div class="muted">目标</div>
+                    <div class="target" id="targetText">—</div>
+                </div>
+                <div class="btns">
+                    <button type="button" id="btnCopy">复制剩余时间</button>
+                </div>
+            </div>
+
+            <div class="countdown" aria-live="polite" aria-atomic="true">
+                <div class="unit">
+                    <div class="value" id="days">—</div>
+                    <div class="label">天</div>
+                </div>
+                <div class="unit">
+                    <div class="value" id="hours">—</div>
+                    <div class="label">小时</div>
+                </div>
+                <div class="unit">
+                    <div class="value" id="minutes">—</div>
+                    <div class="label">分钟</div>
+                </div>
+                <div class="unit">
+                    <div class="value" id="seconds">—</div>
+                    <div class="label">秒</div>
+                </div>
+            </div>
+
+            <div class="muted" id="statusText">—</div>
+        </div>
+
+        <div class="muted note">
+            说明：春节（农历正月初一）日期按年份内置，到了新的一年会自动切换到“下一个春节”。
+        </div>
+    </div>
+
+    <script>
+        // 春节（农历正月初一）公历日期表
+        // 注：使用本地时区 00:00:00
+        const SPRING_FESTIVAL = {
+            2024: '2024-02-10',
+            2025: '2025-01-29',
+            2026: '2026-02-17',
+            2027: '2027-02-06',
+            2028: '2028-01-26',
+            2029: '2029-02-13',
+            2030: '2030-02-03',
+            2031: '2031-01-23',
+            2032: '2032-02-11',
+            2033: '2033-01-31',
+            2034: '2034-02-19',
+            2035: '2035-02-08'
+        };
+
+        function pad2(n) {
+            return String(n).padStart(2, '0');
+        }
+
+        function formatDateTime(d) {
+            try {
+                return new Intl.DateTimeFormat('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }).format(d);
+            } catch {
+                return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+            }
+        }
+
+        function formatDateOnly(d) {
+            try {
+                return new Intl.DateTimeFormat('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    weekday: 'short'
+                }).format(d);
+            } catch {
+                return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+            }
+        }
+
+        function parseLocalMidnight(dateStr) {
+            // 'YYYY-MM-DD' -> local midnight
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d, 0, 0, 0, 0);
+        }
+
+        function pickNextTarget(now) {
+            const thisYear = now.getFullYear();
+            for (let y = thisYear; y <= thisYear + 20; y++) {
+                const dateStr = SPRING_FESTIVAL[y];
+                if (!dateStr) continue;
+                const target = parseLocalMidnight(dateStr);
+                if (now.getTime() < target.getTime()) {
+                    return { year: y, target };
+                }
+            }
+            // fallback：选表里最后一个
+            const years = Object.keys(SPRING_FESTIVAL).map(Number).sort((a, b) => a - b);
+            const lastYear = years[years.length - 1];
+            return { year: lastYear, target: parseLocalMidnight(SPRING_FESTIVAL[lastYear]) };
+        }
+
+        const elNow = document.getElementById('nowText');
+        const elTarget = document.getElementById('targetText');
+        const elStatus = document.getElementById('statusText');
+        const elDays = document.getElementById('days');
+        const elHours = document.getElementById('hours');
+        const elMinutes = document.getElementById('minutes');
+        const elSeconds = document.getElementById('seconds');
+        const btnCopy = document.getElementById('btnCopy');
+        const elGreeting = document.getElementById('greeting');
+
+        function setCelebrationMode(on) {
+            document.body.classList.toggle('celebrate', !!on);
+            if (on) {
+                document.body.classList.remove('final5');
+                const elFinalCountdown = document.getElementById('finalCountdown');
+                if (elFinalCountdown) {
+                    elFinalCountdown.style.display = 'none';
+                    elFinalCountdown.textContent = '';
+                }
+            }
+
+            if (elGreeting) {
+                elGreeting.textContent = '春节快乐';
+            }
+        }
+
+        // 烟花
+        const fwCanvas = document.getElementById('fireworks');
+        const fwCtx = fwCanvas.getContext('2d', { alpha: true });
+        let fireworksStarted = false;
+        let fireworksRaf = 0;
+        let lastLaunchAt = 0;
+        let isTimeUp = false;
+        const particles = [];
+        const rockets = [];
+
+        // 音效：使用外部文件（仍需一次用户交互解锁）
+        const SFX_SHOOT = '../../music/shoot.wav';
+        const SFX_BOMB = '../../music/bomb.wav';
+        const SFX_TICK = '../../music/DADADA.wav';
+
+        const shootPool = [];
+        let shootPoolIndex = 0;
+        const bombPool = [];
+        let bombPoolIndex = 0;
+        const tickPool = [];
+        let tickPoolIndex = 0;
+
+        function ensureAudioReady() {
+            const fillPool = (pool, src, size, volume) => {
+                if (pool.length) return;
+                for (let k = 0; k < size; k++) {
+                    const a = new Audio(src);
+                    a.preload = 'auto';
+                    a.volume = volume;
+                    pool.push(a);
+                }
+            };
+
+            fillPool(shootPool, SFX_SHOOT, 6, 0.22);
+            fillPool(bombPool, SFX_BOMB, 8, 0.34);
+            fillPool(tickPool, SFX_TICK, 4, 0.38);
+        }
+
+        function resizeFireworks() {
+            const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+            fwCanvas.width = Math.floor(window.innerWidth * dpr);
+            fwCanvas.height = Math.floor(window.innerHeight * dpr);
+            fwCanvas.style.width = '100vw';
+            fwCanvas.style.height = '100vh';
+            fwCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function rand(min, max) {
+            return min + Math.random() * (max - min);
+        }
+
+        function burst(x, y, baseHue = rand(0, 360)) {
+            const count = Math.floor(rand(95, 150));
+            for (let i = 0; i < count; i++) {
+                const angle = rand(0, Math.PI * 2);
+                const speed = rand(2.6, 7.8);
+                particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 0,
+                    maxLife: rand(70, 120),
+                    size: rand(1.4, 2.8),
+                    hue: (baseHue + rand(-25, 25) + 360) % 360,
+                    alpha: 1
+                });
+            }
+        }
+
+        function playFromPool(pool, indexRef, volume) {
+            ensureAudioReady();
+            if (!pool.length) return;
+
+            const a = pool[indexRef.value % pool.length];
+            indexRef.value += 1;
+            try {
+                a.volume = volume;
+                a.muted = false;
+                a.pause();
+                try { a.currentTime = 0; } catch { }
+                const p = a.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(() => { /* ignore */ });
+                }
+            } catch {
+                // ignore
+            }
+        }
+
+        function playShoot() {
+            const idx = { value: shootPoolIndex };
+            playFromPool(shootPool, idx, 0.22);
+            shootPoolIndex = idx.value;
+        }
+
+        function playBomb(intensity = 1) {
+            const i = Math.max(0.5, Math.min(2.0, intensity));
+            const vol = Math.max(0.12, Math.min(0.85, 0.34 * i));
+            const idx = { value: bombPoolIndex };
+            playFromPool(bombPool, idx, vol);
+            bombPoolIndex = idx.value;
+        }
+
+        function playTick() {
+            const idx = { value: tickPoolIndex };
+            playFromPool(tickPool, idx, 0.38);
+            tickPoolIndex = idx.value;
+        }
+
+        function launchRocket() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const x = rand(w * 0.15, w * 0.85);
+            const y = h + 12;
+            const hue = rand(0, 360);
+            playShoot();
+            rockets.push({
+                x,
+                y,
+                vx: rand(-0.6, 0.6),
+                vy: rand(-12.2, -9.4),
+                targetY: rand(h * 0.16, h * 0.55),
+                life: 0,
+                maxLife: Math.floor(rand(70, 110)),
+                hue,
+                trail: []
+            });
+        }
+
+        function startFireworks() {
+            if (fireworksStarted) return;
+            fireworksStarted = true;
+            resizeFireworks();
+
+            // 放烟花时，“春节快乐”始终显示（并在未解锁时提示点击开启声音）
+            setCelebrationMode(true);
+
+            const tick = (t) => {
+                // 透明擦除形成拖尾：避免画布逐渐变成“不透明黑色”盖住下层文字
+                // destination-out 会降低已有像素 alpha，从而让画布保持透明
+                fwCtx.globalCompositeOperation = 'destination-out';
+                fwCtx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+                fwCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+                fwCtx.globalCompositeOperation = 'lighter';
+
+                // 发射火箭
+                if (!lastLaunchAt || t - lastLaunchAt > 380) {
+                    lastLaunchAt = t;
+                    // 更猛烈：每次发射 1-2 枚；同时做个上限避免卡顿
+                    if (rockets.length < 10) launchRocket();
+                    if (rockets.length < 10 && Math.random() < 0.65) launchRocket();
+                }
+
+                // 更新/绘制火箭（上升+拖尾）
+                for (let i = rockets.length - 1; i >= 0; i--) {
+                    const r = rockets[i];
+                    r.life += 1;
+                    r.vx *= 0.99;
+                    r.vy += 0.08; // 重力
+                    r.x += r.vx;
+                    r.y += r.vy;
+
+                    r.trail.push({ x: r.x, y: r.y, a: 1 });
+                    if (r.trail.length > 18) r.trail.shift();
+
+                    // 拖尾
+                    for (let j = 0; j < r.trail.length - 1; j++) {
+                        const p0 = r.trail[j];
+                        const p1 = r.trail[j + 1];
+                        const alpha = (j / (r.trail.length - 1)) * 0.55;
+                        fwCtx.strokeStyle = `hsla(${r.hue}, 95%, 70%, ${alpha})`;
+                        fwCtx.lineWidth = 2;
+                        fwCtx.beginPath();
+                        fwCtx.moveTo(p0.x, p0.y);
+                        fwCtx.lineTo(p1.x, p1.y);
+                        fwCtx.stroke();
+                    }
+
+                    // 火箭头
+                    fwCtx.fillStyle = `hsla(${r.hue}, 95%, 75%, 0.95)`;
+                    fwCtx.beginPath();
+                    fwCtx.arc(r.x, r.y, 2.2, 0, Math.PI * 2);
+                    fwCtx.fill();
+
+                    const reached = r.y <= r.targetY || r.life >= r.maxLife || r.vy > -1.2;
+                    if (reached) {
+                        // 双重爆炸：主爆 + 次爆（更猛烈）
+                        burst(r.x, r.y, r.hue);
+                        burst(r.x + rand(-12, 12), r.y + rand(-10, 10), (r.hue + rand(-18, 18) + 360) % 360);
+                        playBomb(1.15);
+                        rockets.splice(i, 1);
+                    }
+                }
+
+                // 粒子上限（避免设备性能差时无限增长）
+                if (particles.length > 2600) {
+                    particles.splice(0, particles.length - 2600);
+                }
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.life += 1;
+                    // 简单重力和阻尼
+                    p.vx *= 0.985;
+                    p.vy = p.vy * 0.985 + 0.03;
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    const k = p.life / p.maxLife;
+                    p.alpha = Math.max(0, 1 - k);
+
+                    if (p.alpha <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    fwCtx.fillStyle = `hsla(${p.hue}, 95%, 65%, ${p.alpha})`;
+                    fwCtx.beginPath();
+                    fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    fwCtx.fill();
+                }
+
+                fireworksRaf = requestAnimationFrame(tick);
+            };
+
+            // 先发两枚
+            launchRocket();
+            launchRocket();
+            launchRocket();
+            launchRocket();
+
+            fireworksRaf = requestAnimationFrame(tick);
+        }
+
+        function fireworkAt(x, y) {
+            // 双层爆炸更像“烟花”
+            const hue = rand(0, 360);
+            burst(x, y, hue);
+            burst(x + rand(-10, 10), y + rand(-8, 8), (hue + rand(-25, 25) + 360) % 360);
+            playBomb(1.0);
+        }
+
+        // 方便在控制台测试：startFireworks()
+        window.startFireworks = startFireworks;
+
+        // 点击位置生成烟花（不影响面板按钮操作）
+        function onUserClickFireworks(evt) {
+            // 只要在放烟花（或已到点进入庆祝）就允许点击生成烟花
+            if (!isTimeUp && !fireworksStarted) return;
+
+            const target = evt.target;
+            if (target && target.closest && target.closest('.panel')) return;
+            if (target && target.closest && target.closest('button')) return;
+
+            // 兜底：如果处于庆祝状态但动画还没启动，点击时补启动
+            if (!fireworksStarted) startFireworks();
+
+            const x = evt.clientX;
+            const y = evt.clientY;
+            if (typeof x !== 'number' || typeof y !== 'number') return;
+            fireworkAt(x, y);
+        }
+
+        window.addEventListener('pointerdown', onUserClickFireworks, { passive: true });
+
+        window.addEventListener('resize', () => {
+            if (!fireworksStarted) return;
+            resizeFireworks();
+        });
+
+        const elFinalCountdown = document.getElementById('finalCountdown');
+        let lastFinalSecond = null;
+        let finalTimer = 0;
+        let finalTargetTime = 0;
+        let previewMode = false;
+
+        function setFinalCountdown(n) {
+            if (!elFinalCountdown) return;
+            if (!n || n <= 0) {
+                elFinalCountdown.style.display = 'none';
+                elFinalCountdown.textContent = '';
+                return;
+            }
+            elFinalCountdown.style.display = 'block';
+            elFinalCountdown.textContent = String(n);
+        }
+
+        function stopFinalCountdownLoop() {
+            if (finalTimer) clearInterval(finalTimer);
+            finalTimer = 0;
+            lastFinalSecond = null;
+            document.body.classList.remove('final5');
+            setFinalCountdown(0);
+        }
+
+        function startFinalCountdownLoop() {
+            if (finalTimer) return;
+
+            const tick = () => {
+                const diffMs = finalTargetTime - Date.now();
+                if (diffMs <= 0) {
+                    // 到点瞬间：直接进入庆祝并启动烟花，避免等待 render()（每秒一次）导致面板闪回
+                    isTimeUp = true;
+                    setCelebrationMode(true);
+                    startFireworks();
+                    stopFinalCountdownLoop();
+                    return;
+                }
+
+                const secondsLeft = Math.ceil(diffMs / 1000);
+                if (secondsLeft > 5) {
+                    stopFinalCountdownLoop();
+                    return;
+                }
+
+                document.body.classList.add('final5');
+                setFinalCountdown(secondsLeft);
+                if (lastFinalSecond !== secondsLeft) {
+                    lastFinalSecond = secondsLeft;
+                    playTick();
+                }
+            };
+
+            // 20ms 粒度足够对齐到“每个数字约 1s”且不重
+            finalTimer = setInterval(tick, 20);
+            tick();
+        }
+
+        function render() {
+            const now = new Date();
+            elNow.textContent = `现在：${formatDateTime(now)}`;
+
+            const { year, target } = pickNextTarget(now);
+            elTarget.textContent = `${year} 年春节：${formatDateOnly(target)}（00:00）`;
+
+            // 预览模式下，由 previewEffect() 接管 UI / 音效 / 状态，避免被 render() 覆盖
+            if (previewMode) {
+                return;
+            }
+
+            const diffMs = target.getTime() - now.getTime();
+            if (diffMs <= 0) {
+                isTimeUp = true;
+                stopFinalCountdownLoop();
+                setCelebrationMode(true);
+                elDays.textContent = '0';
+                elHours.textContent = '00';
+                elMinutes.textContent = '00';
+                elSeconds.textContent = '00';
+                elStatus.textContent = '春节快乐！';
+                startFireworks();
+                return;
+            }
+
+            isTimeUp = false;
+
+            // 如果烟花在跑（例如预览/手动启动），就保持“春节快乐”常显
+            if (fireworksStarted) {
+                setCelebrationMode(true);
+            } else {
+                setCelebrationMode(false);
+            }
+
+            // 最后 5 秒：隐藏原倒计时面板，只显示大数字；每秒响一下
+            if (diffMs > 0 && diffMs <= 5000) {
+                finalTargetTime = target.getTime();
+                startFinalCountdownLoop();
+            } else {
+                stopFinalCountdownLoop();
+            }
+
+            const totalSeconds = Math.floor(diffMs / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            elDays.textContent = String(days);
+            elHours.textContent = pad2(hours);
+            elMinutes.textContent = pad2(minutes);
+            elSeconds.textContent = pad2(seconds);
+
+            elStatus.textContent = `距离 ${year} 年春节还有 ${days} 天 ${hours} 小时 ${minutes} 分 ${seconds} 秒`;
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            }
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                document.execCommand('copy');
+            } finally {
+                document.body.removeChild(ta);
+            }
+            return Promise.resolve();
+        }
+
+        btnCopy.addEventListener('click', async () => {
+            const text = elStatus.textContent || '';
+            try {
+                await copyText(text);
+                elStatus.textContent = '已复制';
+                setTimeout(render, 800);
+            } catch {
+                // ignore
+            }
+        });
+
+        render();
+        setInterval(render, 1000);
+
+        // 预览函数：演示“5 秒倒计时 + 背景音乐 + 发射 + 爆炸”
+        // 使用方式：在控制台输入 previewEffect()
+        window.previewEffect = async function previewEffect() {
+            // 演示：把目标设为 5 秒后，复用同一套“final5”显示逻辑
+            previewMode = true;
+            stopFinalCountdownLoop();
+            isTimeUp = false;
+            setCelebrationMode(false);
+            finalTargetTime = Date.now() + 5000;
+            startFinalCountdownLoop();
+
+            setTimeout(() => {
+                // 进入“到点”状态并开始放烟花
+                isTimeUp = true;
+                setCelebrationMode(true);
+                startFireworks();
+                // 立刻来一发爆炸（可听 bomb）
+                fireworkAt(window.innerWidth * 0.5, window.innerHeight * 0.35);
+                // 预览结束后交还 render() 控制
+                setTimeout(() => {
+                    previewMode = false;
+                }, 300);
+            }, 5050);
+        };
+    </script>
+</body>
+
+</html>
