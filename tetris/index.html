@@ -9,6 +9,8 @@
     <meta name="description" content="俄罗斯方块小游戏" />
     <title>俄罗斯方块</title>
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./responsive.css" />
+    <link rel="stylesheet" href="./controls-style.css" />
 </head>
 
 <body>
@@ -55,6 +57,66 @@
 
     <script src="./app.js" defer></script>
     <script src="./controls.js" defer></script>
+    <script>
+        // 响应式游戏区域自适应
+        function adjustGameSize() {
+            const gameContainer = document.querySelector('.game-container');
+            const gameArea = document.querySelector('.game-area');
+            const tetrisGame = document.querySelector('.tetris-game');
+
+            if (!gameContainer || !tetrisGame || !gameArea) return;
+
+            const viewport = {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                isMobile: window.innerWidth <= 520,
+                isTablet: window.innerWidth > 520 && window.innerWidth <= 960,
+                isLandscape: window.innerHeight < 500 && window.matchMedia("(orientation: landscape)").matches
+            };
+
+            // 重置transform
+            gameContainer.style.transform = '';
+            gameContainer.style.transformOrigin = '';
+            gameContainer.style.marginBottom = '';
+            gameArea.style.width = '';
+
+            if (viewport.isMobile) {
+                // 手机竖屏：最大宽度为可视区宽度减去padding
+                const maxWidth = Math.min(viewport.width - 24, 250);
+                const containerWidth = tetrisGame.offsetWidth || 240;
+
+                if (containerWidth > maxWidth) {
+                    const scale = maxWidth / containerWidth;
+                    gameContainer.style.transform = `scale(${scale})`;
+                    gameContainer.style.transformOrigin = 'top center';
+                }
+            }
+
+            if (viewport.isLandscape) {
+                // 横屏模式：调整按钮大小
+                const dpadBtn = document.querySelector('.dpad');
+                if (dpadBtn) {
+                    dpadBtn.style.width = '120px';
+                    dpadBtn.style.height = '120px';
+                }
+            }
+        }
+
+        // DOM加载完成后调整
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(adjustGameSize, 600);
+            });
+        } else {
+            setTimeout(adjustGameSize, 600);
+        }
+
+        // 监听窗口变化
+        window.addEventListener('resize', function () {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(adjustGameSize, 300);
+        });
+    </script>
 </body>
 
 </html>

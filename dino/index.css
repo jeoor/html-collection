@@ -10,6 +10,9 @@ body {
   height: 100%;
   overflow: hidden;
   touch-action: manipulation;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
 .icon {
@@ -84,6 +87,9 @@ body {
   position: absolute;
   top: 0;
   z-index: 2;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
 .offline .controller {
@@ -227,6 +233,8 @@ body {
 .arcade-mode .runner-container,
 .arcade-mode .runner-canvas {
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
   max-width: 100%;
   overflow: hidden;
 }

@@ -205,7 +205,7 @@
      */
     Runner.keycodes = {
         JUMP: { '38': 1, '32': 1 },  // Up, spacebar
-        DUCK: { '40': 1, '83': 1 },  // Down, S
+        DUCK: { '40': 1, '83': 1, '2': 1 },  // Down, S, Right mouse button
         RESTART: { '13': 1 }  // Enter
     };
 
@@ -366,6 +366,10 @@
                 this.dimensions.HEIGHT, Runner.classes.PLAYER);
 
             this.canvasCtx = this.canvas.getContext('2d');
+            // Disable image smoothing for pixel-perfect rendering
+            this.canvasCtx.imageSmoothingEnabled = false;
+            this.canvasCtx.webkitImageSmoothingEnabled = false;
+            this.canvasCtx.msImageSmoothingEnabled = false;
             this.canvasCtx.fillStyle = '#f7f7f7';
             this.canvasCtx.fill();
             Runner.updateCanvasScaling(this.canvas);
@@ -648,6 +652,11 @@
                 document.addEventListener(Runner.events.MOUSEDOWN, this);
                 document.addEventListener(Runner.events.MOUSEUP, this);
             }
+
+            // Disable right-click context menu.
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
         },
 
         /**
@@ -677,10 +686,13 @@
                 e.preventDefault();
             }
 
+            // Check if right mouse button was clicked.
+            var isRightClick = e.type == Runner.events.MOUSEDOWN && e.button === 2;
+
             if (e.target != this.detailsButton) {
                 if (!this.crashed && (Runner.keycodes.JUMP[e.keyCode] ||
                     e.type == Runner.events.TOUCHSTART ||
-                    e.type == Runner.events.MOUSEDOWN)) {
+                    (e.type == Runner.events.MOUSEDOWN && e.button === 0))) {
                     if (!this.playing) {
                         this.loadSounds();
                         this.playing = true;
@@ -702,7 +714,7 @@
                 }
             }
 
-            if (this.playing && !this.crashed && Runner.keycodes.DUCK[e.keyCode]) {
+            if (this.playing && !this.crashed && (Runner.keycodes.DUCK[e.keyCode] || isRightClick)) {
                 e.preventDefault();
                 if (this.tRex.jumping) {
                     // Speed drop, activated only when jump key is not pressed.
@@ -723,11 +735,14 @@
             var keyCode = String(e.keyCode);
             var isjumpKey = Runner.keycodes.JUMP[keyCode] ||
                 e.type == Runner.events.TOUCHEND ||
-                e.type == Runner.events.MOUSEUP;
+                (e.type == Runner.events.MOUSEUP && e.button === 0);
+
+            // Check if right mouse button was released.
+            var isRightClickRelease = e.type == Runner.events.MOUSEUP && e.button === 2;
 
             if (this.isRunning() && isjumpKey) {
                 this.tRex.endJump();
-            } else if (Runner.keycodes.DUCK[keyCode]) {
+            } else if (Runner.keycodes.DUCK[keyCode] || isRightClickRelease) {
                 this.tRex.speedDrop = false;
                 this.tRex.setDuck(false);
             } else if (this.crashed) {
@@ -941,6 +956,11 @@
     Runner.updateCanvasScaling = function (canvas, opt_width, opt_height) {
         var context = canvas.getContext('2d');
 
+        // Disable image smoothing for pixel-perfect rendering
+        context.imageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
+
         // Query the various pixel ratios
         var devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
         var backingStoreRatio = Math.floor(context.webkitBackingStorePixelRatio) || 1;
@@ -1053,6 +1073,9 @@
     function GameOverPanel(canvas, textImgPos, restartImgPos, dimensions) {
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.canvasDimensions = dimensions;
         this.textImgPos = textImgPos;
         this.restartImgPos = restartImgPos;
@@ -1537,6 +1560,9 @@
     function Trex(canvas, spritePos) {
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.spritePos = spritePos;
         this.xPos = 0;
         this.yPos = 0;
@@ -1903,6 +1929,9 @@
     function DistanceMeter(canvas, spritePos, canvasWidth) {
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.image = Runner.imageSprite;
         this.spritePos = spritePos;
         this.x = 0;
@@ -2164,6 +2193,9 @@
     function Cloud(canvas, spritePos, containerWidth) {
         this.canvas = canvas;
         this.canvasCtx = this.canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.spritePos = spritePos;
         this.containerWidth = containerWidth;
         this.xPos = containerWidth;
@@ -2257,6 +2289,9 @@
         this.spritePos = spritePos;
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.xPos = containerWidth - 50;
         this.yPos = 30;
         this.currentPhase = 0;
@@ -2417,6 +2452,9 @@
         this.spritePos = spritePos;
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.sourceDimensions = {};
         this.dimensions = HorizonLine.dimensions;
         this.sourceXPos = [this.spritePos.x, this.spritePos.x +
@@ -2546,6 +2584,9 @@
     function Horizon(canvas, spritePos, dimensions, gapCoefficient) {
         this.canvas = canvas;
         this.canvasCtx = this.canvas.getContext('2d');
+        this.canvasCtx.imageSmoothingEnabled = false;
+        this.canvasCtx.webkitImageSmoothingEnabled = false;
+        this.canvasCtx.msImageSmoothingEnabled = false;
         this.config = Horizon.config;
         this.dimensions = dimensions;
         this.gapCoefficient = gapCoefficient;
