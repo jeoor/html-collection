@@ -1,122 +1,21 @@
-<!doctype html>
-<html lang="zh-CN">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="icon" href="https://cdn.jsdmirror.com/gh/jeoor/img@main/logo/logo.svg">
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="俄罗斯方块小游戏" />
+	<link rel="icon" href="https://cdn.jsdmirror.com/gh/jeoor/img@main/logo/logo.svg">
+    <meta name="renderer" content="webkit">
+    <meta name="description" content="使用React、Redux、Immutable制作的俄罗斯方块" />
+    <meta name="keywords" content="俄罗斯方块,Tetris,React,Redux,Immuatble,JavaScript">
+    <meta name="format-detection" content="telephone=no"/>
+    <script>;(function(){var w=parseInt(window.screen.width),s=w/640,u=navigator.userAgent.toLowerCase(),m='<meta name="viewport" content="width=640,';if(/android (\d+\.\d+)/.test(u)){if(parseFloat(RegExp.$1)>2.3)m+='minimum-scale='+s+',maximum-scale='+s+',';}else{m+='user-scalable=no,';}m+='target-densitydpi=device-dpi">';document.write(m);}());</script>
+    <meta charset="UTF-8">
     <title>俄罗斯方块</title>
-    <link rel="stylesheet" href="./style.css" />
-    <link rel="stylesheet" href="./responsive.css" />
-    <link rel="stylesheet" href="./controls-style.css" />
-</head>
-
+    <link href="./loader.css" rel="stylesheet" />
+<link href="css-1.0.1.css" rel="stylesheet"></head>
 <body>
-    <div class="page">
-        <header class="page-header">
-            <h1 class="page-title">俄罗斯方块</h1>
-            <div class="game-score" aria-live="polite">
-                <div>
-                    <span class="game-score-txt">当前得分</span>
-                    <span class="score">0</span>
-                    <span>分</span>
-                </div>
-            </div>
-        </header>
-
-        <main class="page-main">
-            <section class="game-area" aria-label="游戏区域">
-                <div class="game-container" role="application" aria-label="俄罗斯方块"></div>
-            </section>
-
-            <section class="mobile-controls" aria-label="手机按键操作">
-                <div class="dpad" role="group" aria-label="方向键">
-                    <button class="control-btn dpad-up" type="button" data-code="ArrowUp" aria-label="上">
-                        ↑
-                    </button>
-                    <button class="control-btn dpad-left" type="button" data-code="ArrowLeft" aria-label="左">
-                        ←
-                    </button>
-                    <button class="control-btn dpad-down" type="button" data-code="ArrowDown" aria-label="下">
-                        ↓
-                    </button>
-                    <button class="control-btn dpad-right" type="button" data-code="ArrowRight" aria-label="右">
-                        →
-                    </button>
-                </div>
-            </section>
-
-            <section class="game-tip" aria-label="玩法说明">
-                <div class="tip-line">操作：↑ 旋转，←/→ 移动，↓ 加速下落</div>
-                <div class="tip-line">计分：消 1 行 +100；多行额外 +50</div>
-            </section>
-        </main>
+<div id="root">
+    <div class="load">
+        <div class="loader">加载中...</div>
     </div>
-
-    <script src="./app.js" defer></script>
-    <script src="./controls.js" defer></script>
-    <script>
-        // 响应式游戏区域自适应
-        function adjustGameSize() {
-            const gameContainer = document.querySelector('.game-container');
-            const gameArea = document.querySelector('.game-area');
-            const tetrisGame = document.querySelector('.tetris-game');
-
-            if (!gameContainer || !tetrisGame || !gameArea) return;
-
-            const viewport = {
-                width: window.innerWidth,
-                height: window.innerHeight,
-                isMobile: window.innerWidth <= 520,
-                isTablet: window.innerWidth > 520 && window.innerWidth <= 960,
-                isLandscape: window.innerHeight < 500 && window.matchMedia("(orientation: landscape)").matches
-            };
-
-            // 重置transform
-            gameContainer.style.transform = '';
-            gameContainer.style.transformOrigin = '';
-            gameContainer.style.marginBottom = '';
-            gameArea.style.width = '';
-
-            if (viewport.isMobile) {
-                // 手机竖屏：最大宽度为可视区宽度减去padding
-                const maxWidth = Math.min(viewport.width - 24, 250);
-                const containerWidth = tetrisGame.offsetWidth || 240;
-
-                if (containerWidth > maxWidth) {
-                    const scale = maxWidth / containerWidth;
-                    gameContainer.style.transform = `scale(${scale})`;
-                    gameContainer.style.transformOrigin = 'top center';
-                }
-            }
-
-            if (viewport.isLandscape) {
-                // 横屏模式：调整按钮大小
-                const dpadBtn = document.querySelector('.dpad');
-                if (dpadBtn) {
-                    dpadBtn.style.width = '120px';
-                    dpadBtn.style.height = '120px';
-                }
-            }
-        }
-
-        // DOM加载完成后调整
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function () {
-                setTimeout(adjustGameSize, 600);
-            });
-        } else {
-            setTimeout(adjustGameSize, 600);
-        }
-
-        // 监听窗口变化
-        window.addEventListener('resize', function () {
-            clearTimeout(window.resizeTimer);
-            window.resizeTimer = setTimeout(adjustGameSize, 300);
-        });
-    </script>
-</body>
-
+</div>
+<script type="text/javascript" src="app-1.0.1.js"></script></body>
 </html>
