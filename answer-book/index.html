@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="icon" href="https://cdn.jsdmirror.com/gh/jeoor/img@main/logo/logo.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答案之书</title>
+    <link rel="stylesheet" href="../../ui.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            color: #000;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #container {
+            width: min(90vw, 520px);
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .title h1 {
+            margin: 0 0 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #000;
+            letter-spacing: 6px;
+        }
+
+        .title p {
+            margin: 0;
+            font-size: 13px;
+            color: #999;
+        }
+
+        #book {
+            width: 100%;
+            min-height: 220px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #000;
+            font-weight: 500;
+            font-size: clamp(32px, 8vw, 48px);
+            line-height: 1.4;
+            letter-spacing: 2px;
+            padding: 48px 32px;
+            user-select: none;
+        }
+
+        #book.reveal {
+            animation: reveal 300ms ease-out;
+        }
+
+        @keyframes reveal {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #explanation {
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #999;
+        }
+
+        #btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 4px;
+            background: #000;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #btn:hover {
+            background: #333;
+        }
+
+        #btn:active {
+            transform: translateY(1px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            #btn,
+            #book.reveal {
+                animation: none;
+                transition: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #container {
+                padding: 48px 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div class="title">
+            <h1>答案之书</h1>
+            <p>默念你的问题，点击抽取一句提示</p>
+        </div>
+        <div id="book">答案</div>
+        <div id="explanation">“遇到问题、犹豫不决时，试试拿走这个简单的答案或暗示。”</div>
+        <button id="btn">默念问题、寻找答案</button>
+    </div>
+
+    <script>
+        const goodAnswers = [
+            "当下困难、即将解决",
+            "心有所想、终会靠近",
+            "等待片刻、会有回音",
+            "方向没错、继续前行",
+            "贵人相助、正在路上",
+            "你已准备、可以开始",
+            "机会出现、抓住当下",
+            "顺其自然、反而更好",
+            "慢慢来吧、会更稳妥",
+            "勇敢一点、结果不错",
+            "坚持到底、会见成效",
+            "放下顾虑、轻装上阵",
+            "这次选择、是对的",
+            "你在变强、别怀疑",
+            "会有转机、保持耐心",
+            "稳住节奏、好运将至",
+            "先做一步、就能打开",
+            "付出不亏、终有回报",
+            "沟通一次、误会会解",
+            "今天适合、做决定",
+            "事情会成、只是稍晚",
+            "把握时机、你会赢",
+            "结局向好、放心去做",
+            "你的直觉、值得相信",
+        ];
+
+        const badAnswers = [
+            "时机不对、先别行动",
+            "暂时不行、需要调整",
+            "别太着急、容易出错",
+            "你在高估、当前进展",
+            "先停一停、再想清楚",
+            "这条路上、有点阻力",
+            "答案是否定、别强求",
+            "再等等看、现在太早",
+            "有人隐瞒、先别相信",
+            "风险偏高、谨慎为先",
+            "期待过大、容易失落",
+            "先收一收、锋芒太露",
+            "方向要改、别硬扛",
+            "今天不宜、做决定",
+            "信息不足、无法判断",
+            "计划有漏洞、需要补齐",
+            "此事难成、换个方式",
+            "你会后悔、如果现在",
+            "表面顺利、暗藏问题",
+            "别再纠结、先做取舍",
+            "会有波折、做好预案",
+            "先别投入、成本太高",
+            "暂且放下、以后再说",
+            "结果一般、别抱幻想",
+        ];
+
+        const book = document.getElementById("book");
+        const explanation = document.getElementById("explanation");
+
+        function pickAnswer() {
+            if (goodAnswers.length !== badAnswers.length) {
+                console.warn("好/坏答案数量不相等：", goodAnswers.length, badAnswers.length);
+            }
+
+            const pool = Math.random() < 0.5 ? goodAnswers : badAnswers;
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        document.getElementById("btn").addEventListener("click", function () {
+            const picked = pickAnswer();
+            const randomAnswer = picked.split("、");
+            book.innerHTML = randomAnswer.length >= 2
+                ? `${randomAnswer[0]}<br>${randomAnswer[1]}`
+                : `${picked}`;
+
+            book.classList.remove("reveal");
+            void book.offsetWidth;
+            book.classList.add("reveal");
+        });
+    </script>
+</body>
+
+</html>

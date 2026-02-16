@@ -5,165 +5,204 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HTML 小游戏合集</title>
-    <link rel="stylesheet" href="./ui.css" />
+    <meta name="description" content="收录俄罗斯方块、扫雷、贪吃蛇等经典 HTML5 小游戏，纯前端实现，无需安装，支持手机和电脑浏览器，随时畅玩！" />
+    <meta name="keywords"
+        content="HTML5游戏,小游戏合集,在线游戏,俄罗斯方块,扫雷,贪吃蛇,Chrome Dino,消消乐,答案之书,休闲娱乐,前端项目,开源游戏,网页游戏,手机游戏,电脑游戏" />
+    <meta name="author" content="HTML小游戏合集开源社区" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://fun.kayro.cn/" />
+    <title>敖苛的HTML收藏 | 在线小游戏和工具</title>
+    <link rel="icon" href="https://cdn.jsdmirror.com/gh/jeoor/img@main/logo/logo.svg">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            height: auto;
-            min-height: 100vh;
-            overflow: auto;
+            margin: 0;
+            background: #fff;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
         }
 
         .page {
-            max-width: 980px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 16px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            padding: 100px 32px;
         }
 
         .page-header {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
+            margin-bottom: 80px;
         }
 
         .page-title {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 600;
-            line-height: 1.4;
-            color: #404040;
+            margin: 0 0 16px;
+            font-size: 40px;
+            font-weight: 700;
+            color: #000;
+            letter-spacing: -1px;
         }
 
         .page-subtitle {
             margin: 0;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #717171;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-title {
+            margin: 0 0 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
 
         .item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            padding: 12px 12px;
-            border: 1px solid #d2d4e4;
-            background: #ffffff;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid #f0f0f0;
             text-decoration: none;
+            transition: all 0.2s;
         }
 
-        .item:active {
-            transform: translateY(1px);
+        .item:hover {
+            padding-left: 16px;
         }
 
         .item-title {
-            font-weight: 600;
-            color: #404040;
-            line-height: 1.3;
+            font-size: 18px;
+            font-weight: 500;
+            color: #000;
         }
 
         .item-meta {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .footer {
+            margin-top: 120px;
+            padding-top: 32px;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
             font-size: 12px;
-            color: #717171;
-            white-space: nowrap;
+            color: #555;
         }
 
-        .section-title {
-            margin: 8px 0 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #404040;
-        }
+        @media (max-width: 768px) {
+            .page {
+                padding: 60px 24px;
+            }
 
-        @media (min-width: 720px) {
-            .list {
-                grid-template-columns: 1fr 1fr;
+            .page-title {
+                font-size: 32px;
+            }
+
+            .item {
+                padding: 20px 0;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="page">
+    <main class="page">
         <header class="page-header">
-            <h1 class="page-title">HTML 小游戏合集</h1>
+            <div>
+                <h1 class="page-title">敖苛的HTML收藏</h1>
+            </div>
         </header>
 
-        <nav class="list" aria-label="常用游戏">
-            <a class="item" href="./games/tetris/index.html">
-                <div class="item-title">俄罗斯方块</div>
-                <div class="item-meta">tetris</div>
-            </a>
-            <a class="item" href="./games/minesweep/index.html">
-                <div class="item-title">扫雷</div>
-                <div class="item-meta">minesweep</div>
-            </a>
-            <a class="item" href="./games/xiaoxiaole/index.html">
-                <div class="item-title">消消乐</div>
-                <div class="item-meta">xiaoxiaole</div>
-            </a>
-            <a class="item" href="./games/answer-book/index.html">
-                <div class="item-title">答案之书</div>
-                <div class="item-meta">single file</div>
-            </a>
-            <a class="item" href="./games/snake/index.html">
-                <div class="item-title">贪吃蛇</div>
-                <div class="item-meta">single file</div>
-            </a>
-            <a class="item" href="./games/spring-countdown/index.html">
-                <div class="item-title">春节倒计时</div>
-                <div class="item-meta">single file</div>
-            </a>
-        </nav>
+        <section class="section">
+            <h2 class="section-title">🎮 经典游戏</h2>
+            <nav class="list" aria-label="经典游戏">
+                <a class="item" href="./tetris/index.html" title="俄罗斯方块在线玩">
+                    <span class="item-title">俄罗斯方块</span>
+                    <span class="item-meta">Tetris</span>
+                </a>
+                <a class="item" href="./minesweep/index.html" title="扫雷网页版">
+                    <span class="item-title">扫雷</span>
+                    <span class="item-meta">Minesweeper</span>
+                </a>
+                <a class="item" href="./snake/index.html" title="贪吃蛇小游戏">
+                    <span class="item-title">贪吃蛇</span>
+                    <span class="item-meta">Snake</span>
+                </a>
+                <a class="item" href="./xiaoxiaole/index.html" title="消消乐三消游戏">
+                    <span class="item-title">消消乐</span>
+                    <span class="item-meta">Match-3</span>
+                </a>
+            </nav>
+        </section>
 
-        <nav class="list" aria-label="更多小游戏">
-            <a class="item" href="./games/dino/index.html">
-                <div class="item-title">谷歌恐龙</div>
-                <div class="item-meta">dino</div>
-            </a>
-            <a class="item" href="./games/code-rain/index.html">
-                <div class="item-title">代码雨</div>
-                <div class="item-meta">code-rain</div>
-            </a>
-            <a class="item" href="./games/time-compass/index.html">
-                <div class="item-title">时间罗盘</div>
-                <div class="item-meta">time-compass</div>
-            </a>
-            <a class="item" href="./games/yuansu/index.html">
-                <div class="item-title">元素周期表</div>
-                <div class="item-meta">yuansu</div>
-            </a>
-            <a class="item" href="./games/huaji/index.html">
-                <div class="item-title">压扁滑稽</div>
-                <div class="item-meta">huaji</div>
-            </a>
-            <a class="item" href="./games/shuitong/index.html">
-                <div class="item-title">水桶</div>
-                <div class="item-meta">shuitong</div>
-            </a>
-            <a class="item" href="./games/cuimian/index.html">
-                <div class="item-title">催眠</div>
-                <div class="item-meta">cuimian</div>
-            </a>
-            <a class="item" href="./games/jiazigu/index.html">
-                <div class="item-title">架子鼓</div>
-                <div class="item-meta">jiazigu</div>
-            </a>
-        </nav>
-    </div>
+        <section class="section">
+            <h2 class="section-title">🎯 趣味工具</h2>
+            <nav class="list" aria-label="趣味工具">
+                <a class="item" href="./answer-book/index.html" title="答案之书在线抽签">
+                    <span class="item-title">答案之书</span>
+                    <span class="item-meta">Answer Book</span>
+                </a>
+                <a class="item" href="./spring/index.html" title="春节倒计时工具">
+                    <span class="item-title">春节倒计时</span>
+                    <span class="item-meta">Countdown</span>
+                </a>
+                <a class="item" href="./time-compass/index.html" title="时间罗盘网页工具">
+                    <span class="item-title">时间罗盘</span>
+                    <span class="item-meta">Time Compass</span>
+                </a>
+                <a class="item" href="./yuansu/index.html" title="元素周期表查询">
+                    <span class="item-title">元素周期表</span>
+                    <span class="item-meta">Periodic Table</span>
+                </a>
+            </nav>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">🎪 休闲娱乐</h2>
+            <nav class="list" aria-label="休闲娱乐">
+                <a class="item" href="./dino/index.html" title="谷歌恐龙小游戏">
+                    <span class="item-title">谷歌恐龙</span>
+                    <span class="item-meta">Chrome Dino</span>
+                </a>
+                <a class="item" href="./huaji/index.html" title="压扁滑稽网页版">
+                    <span class="item-title">压扁滑稽</span>
+                    <span class="item-meta">Squishy Bird</span>
+                </a>
+                <a class="item" href="./shuitong/index.html" title="水桶益智游戏">
+                    <span class="item-title">水桶</span>
+                    <span class="item-meta">Water Bucket</span>
+                </a>
+                <a class="item" href="./code-rain/index.html" title="代码雨特效">
+                    <span class="item-title">代码雨</span>
+                    <span class="item-meta">Code Rain</span>
+                </a>
+                <a class="item" href="./cuimian/index.html" title="催眠动画">
+                    <span class="item-title">催眠</span>
+                    <span class="item-meta">Hypnosis</span>
+                </a>
+                <a class="item" href="./jiazigu/index.html" title="架子鼓模拟器">
+                    <span class="item-title">架子鼓</span>
+                    <span class="item-meta">Drum Kit</span>
+                </a>
+            </nav>
+        </section>
+
+        <footer class="footer">
+            <p>2026 © 敖苛</p>
+        </footer>
+    </main>
 </body>
 
 </html>

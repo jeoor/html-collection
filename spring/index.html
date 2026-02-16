@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>
+    /* 响应式优化：手机端布局 */
+    body {
+        font-size: 16px;
+        background: #181818;
+        margin: 0;
+        min-height: 100vh;
+        background: #000;
+        color: #fff;
+        overflow-x: hidden;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        max-width: 800px;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        text-align: center;
+        flex: 1 0 auto;
+    }
+
+    .panel {
+        padding: 18px 8px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        margin-bottom: 12px;
+        box-sizing: border-box;
+    }
+
+    .countdown {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 18px 0 0 0;
+    }
+
+    .unit {
+        flex: 1 1 40%;
+        min-width: 80px;
+        max-width: 120px;
+        background: rgba(255, 255, 255, 0.10);
+        border-radius: 6px;
+        padding: 18px 0 12px 0;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2em;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .value {
+        font-size: 2.2em;
+        font-weight: bold;
+        margin-bottom: 0;
+        margin-right: 4px;
+    }
+
+    .label {
+        font-size: 1em;
+        color: #aaa;
+        margin-bottom: 0;
+        margin-left: 2px;
+    }
+
+    .btns button,
+    #fireworkReadyOkBtn {
+        width: auto;
+        min-width: 120px;
+        font-size: 0.92em;
+        padding: 7px 18px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255, 255, 255, 0.10);
+        color: #fff;
+        transition: background 0.2s;
+        box-sizing: border-box;
+    }
+
+    .btns button:hover {
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .muted.note {
+        font-size: 1em;
+        word-break: break-all;
+        margin-top: 18px;
+        padding: 0 4px;
+    }
+
+    .header h1 {
+        font-size: 1.4em;
+        margin-bottom: 8px;
+    }
+
+    .greeting {
+        font-size: 1.3em;
+        margin: 12px 0;
+        color: #DC143C;
+        text-align: center;
+    }
+
+    /* 默认隐藏移动端专用按钮行 */
+    .btns.btns-mobile-only {
+        display: none;
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            max-width: 100vw;
+            min-height: auto;
+            height: auto;
+            padding: 6px 2vw 10px 2vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .row {
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .target {
+            margin-top: 2px;
+            margin-bottom: 4px;
+            text-align: center;
+            font-size: 1em;
+            white-space: normal;
+        }
+
+        /* 只在手机端显示移动专用按钮行 */
+        .btns.btns-mobile-only {
+            display: flex !important;
+            justify-content: flex-end;
+            margin-top: 0;
+            margin-bottom: 8px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* 隐藏原有PC端按钮（如果有） */
+        .row .btns:not(.btns-mobile-only) {
+            display: none !important;
+        }
+
+        .btns button {
+            min-width: 90px;
+            font-size: 0.85em;
+            padding: 5px 12px;
+        }
+
+        .muted.note {
+            font-size: 0.85em;
+        }
+
+        .greeting {
+            font-size: 0.95em;
+        }
+    }
+
+    .btns.btns-pc-only {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    @media (max-width: 480px) {
+        .btns.btns-pc-only {
+            display: none !important;
+        }
+    }
+</style>
+
+<head>
+    <link rel="icon" href="https://cdn.jsdmirror.com/gh/jeoor/img@main/logo/logo.svg">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>春节倒计时</title>
+    <style>
+        #fireworks {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 0;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            text-align: center;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 4px;
+        }
+
+        .muted {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            border-radius: 8px;
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .unit {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-radius: 4px;
+        }
+
+        .value {
+            font-size: clamp(28px, 6vw, 40px);
+            font-weight: 600;
+        }
+
+        .label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .target {
+            font-weight: 500;
+        }
+
+        .btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .greeting {
+            display: none;
+            font-size: clamp(32px, 10vw, 64px);
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: #DC143C;
+        }
+
+        .final-countdown {
+            display: none;
+            font-size: clamp(64px, 20vw, 128px);
+            font-weight: 900;
+        }
+
+        body.celebrate .header,
+        body.celebrate .panel,
+        body.celebrate .muted.note {
+            display: none;
+        }
+
+        body.celebrate .final-countdown {
+            display: none;
+        }
+
+        body.final5 .panel {
+            display: none;
+        }
+
+        body.celebrate .greeting {
+            display: block;
+        }
+
+        /* 庆祝时：让“春节快乐”位于最底层（在烟花画布下方） */
+        body.celebrate #fireworks {
+            z-index: 2;
+        }
+
+        body.celebrate .container {
+            z-index: 1;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* 音频解锁按钮相关样式已移除 */
+
+        #fireworksBtn {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            padding: 16px 32px;
+            background: rgba(220, 20, 60, 0.9);
+            border: none;
+            border-radius: 24px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(220, 20, 60, 0.4);
+        }
+
+        #fireworksBtn:hover {
+            background: rgba(220, 20, 60, 1);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        #fireworksBtn.hidden {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .countdown {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .container {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="fireworkReadyModal"
+        style="display:none;position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:9999;pointer-events:none;">
+        <div id="fireworkReadyDialog"
+            style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:340px;border-radius:8px;padding:32px 24px;box-shadow:0 4px 24px rgba(0,0,0,0.18);font-size:18px;text-align:center;pointer-events:auto;background:#111 !important;color:#fff !important;">
+            <div id="fireworkReadyText" style="margin-bottom:24px;">烟花已准备</div>
+            <button id="fireworkReadyOkBtn"
+                style="padding:12px 32px;background:rgba(255,255,255,0.12);border:none;border-radius:4px;color:#fff;font-size:16px;cursor:pointer;">确定</button>
+        </div>
+    </div>
+    <canvas id="fireworks" aria-hidden="true"></canvas>
+    <!-- 音频解锁按钮已移除 -->
+    <!-- 烟花按钮已移除 -->
+    <div class="container">
+        <div class="final-countdown" id="finalCountdown" aria-live="assertive" aria-atomic="true"></div>
+        <div class="greeting" id="greeting" aria-live="polite">春节快乐</div>
+        <div class="header" style="display:none;">
+            <h1>春节倒计时</h1>
+            <div class="muted" id="nowText">—</div>
+        </div>
+
+        <div class="panel" style="display:none;">
+            <div class="row">
+                <div class="target" id="targetText">—</div>
+                <div class="btns btns-pc-only">
+                    <button type="button" id="btnCopyPc">复制剩余时间</button>
+                    <span id="copyStatusPc"
+                        style="display:none; position: absolute; right: 100%; top: 50%; transform: translateY(-50%); margin-right: 10px; background: rgba(0,0,0,0.85); color:#fff; font-size:0.92em; padding:2px 10px; border-radius: 8px; white-space:nowrap; z-index:10; pointer-events:none;">已复制</span>
+                </div>
+            </div>
+            <div class="btns btns-mobile-only"
+                style="position:relative;min-width:120px;flex-direction:column;align-items:center;gap:0;">
+                <button type="button" id="btnCopy">复制剩余时间</button>
+                <span id="copyStatus" class="copy-status-mobile">已复制</span>
+            </div>
+            <style>
+                .btns-mobile-only {
+                    position: relative;
+                    min-width: 120px;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0;
+                }
+
+                .copy-status-mobile {
+                    display: none;
+                    position: absolute;
+                    left: 50%;
+                    top: 100%;
+                    transform: translateX(-50%) translateY(8px);
+                    margin: 0;
+                    background: rgba(0, 0, 0, 0.85);
+                    color: #fff;
+                    font-size: 0.92em;
+                    padding: 2px 14px;
+                    border-radius: 8px;
+                    white-space: nowrap;
+                    z-index: 1000;
+                    pointer-events: none;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+                }
+
+                @media (max-width: 480px) {
+                    body {
+                        min-height: 100vh;
+                        height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    .container {
+                        gap: clamp(24px, 7vw, 48px) !important;
+                        padding: clamp(18px, 7vw, 48px) clamp(7vw, 10vw, 48px) clamp(28px, 10vw, 56px) clamp(7vw, 10vw, 48px) !important;
+                        min-height: 0 !important;
+                        flex: 1 0 auto !important;
+                        justify-content: center !important;
+                    }
+
+                    .panel {
+                        gap: clamp(20px, 5vw, 48px) !important;
+                        padding: clamp(28px, 7vw, 48px) clamp(14px, 7vw, 36px) !important;
+                    }
+
+                    .countdown {
+                        gap: clamp(14px, 4vw, 32px) !important;
+                    }
+
+                    .unit {
+                        padding: clamp(20px, 5vw, 36px) 0 clamp(14px, 3vw, 28px) 0 !important;
+                        gap: clamp(6px, 2vw, 18px) !important;
+                    }
+
+                    .row {
+                        gap: clamp(12px, 3vw, 28px) !important;
+                        margin-bottom: clamp(8px, 2vw, 20px) !important;
+                    }
+
+                    .btns {
+                        gap: clamp(12px, 3vw, 28px) !important;
+                        margin-top: clamp(8px, 2vw, 20px) !important;
+                        margin-bottom: clamp(8px, 2vw, 20px) !important;
+                    }
+
+                    .muted.note {
+                        margin-top: clamp(12px, 3vw, 28px) !important;
+                    }
+                }
+            </style>
+
+            <div class="countdown" aria-live="polite" aria-atomic="true">
+                <div class="unit">
+                    <div class="value" id="days">—</div>
+                    <div class="label">天</div>
+                </div>
+                <div class="unit">
+                    <div class="value" id="hours">—</div>
+                    <div class="label">小时</div>
+                </div>
+                <div class="unit">
+                    <div class="value" id="minutes">—</div>
+                    <div class="label">分钟</div>
+                </div>
+                <div class="unit">
+                    <div class="value" id="seconds">—</div>
+                    <div class="label">秒</div>
+                </div>
+            </div>
+
+            <div class="muted" id="statusText">—</div>
+            <div class="muted note" id="holidayInfo" style="margin-top:10px;display:none;"></div>
+        </div>
+    </div>
+
+    <script src="./solarlunar.js"></script>
+    <script>
+        // 弹窗相关
+        const fireworkReadyModal = document.getElementById('fireworkReadyModal');
+        const fireworkReadyOkBtn = document.getElementById('fireworkReadyOkBtn');
+        let fireworkReadyShown = false;
+        if (fireworkReadyOkBtn) {
+            fireworkReadyOkBtn.addEventListener('click', () => {
+                fireworkReadyModal.style.display = 'none';
+                // 记录已关闭弹窗，防止重复弹出
+                sessionStorage.setItem('springPopupClosed', '1');
+                // 恢复弹窗样式为默认（但强制为不透明黑底）
+                const dialog = document.getElementById('fireworkReadyDialog');
+                if (dialog) {
+                    dialog.style.background = '#111';
+                    dialog.style.color = '#fff';
+                }
+            });
+        }
+        // 动态计算春节（农历正月初一）公历日期
+        // 依赖 solarlunar.js，支持静态网页
+        function getSpringFestivalDate(year) {
+            if (!year || typeof year !== 'number') return null;
+            if (window.solarlunar && typeof window.solarlunar.lunar2solar === 'function') {
+                try {
+                    const d = window.solarlunar.lunar2solar(year, 1, 1, false);
+                    if (d && d.year && d.month && d.day) {
+                        return `${d.year}-${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+                    }
+                    console.warn('solarlunar.lunar2solar 返回无效:', d);
+                } catch (e) {
+                    console.warn('调用 solarlunar.lunar2solar 出错：', e);
+                }
+            } else {
+                console.warn('solarlunar 未检测到 lunar2solar；请确保 solarlunar.js 已正确加载');
+            }
+            return null;
+        }
+
+        function pad2(n) {
+            return String(n).padStart(2, '0');
+        }
+
+        function formatDateTime(d) {
+            try {
+                return new Intl.DateTimeFormat('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }).format(d);
+            } catch {
+                return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+            }
+        }
+
+        function formatDateOnly(d) {
+            try {
+                return new Intl.DateTimeFormat('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    weekday: 'short'
+                }).format(d);
+            } catch {
+                return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+            }
+        }
+
+        function parseLocalMidnight(dateStr) {
+            // Guard: if dateStr is falsy, return null
+            if (!dateStr) return null;
+            // 'YYYY-MM-DD' -> local midnight
+            const parts = String(dateStr).split('-').map(Number);
+            if (parts.length < 3 || parts.some(isNaN)) return null;
+            const [y, m, d] = parts;
+            return new Date(y, m - 1, d, 0, 0, 0, 0);
+        }
+
+        function pickNextTarget(now) {
+            const thisYear = now.getFullYear();
+            for (let y = thisYear; y <= thisYear + 20; y++) {
+                const dateStr = getSpringFestivalDate(y);
+                if (!dateStr) continue;
+                const target = parseLocalMidnight(dateStr);
+                if (now.getTime() < target.getTime()) {
+                    return { year: y, target };
+                }
+            }
+            // fallback：寻找最近有数据的年份并使用其日期；找不到则退回到下一年1月1日
+            for (let y = thisYear + 20; y >= thisYear; y--) {
+                const dateStr = getSpringFestivalDate(y);
+                if (dateStr) {
+                    const t = parseLocalMidnight(dateStr);
+                    if (t) return { year: y, target: t };
+                }
+            }
+            // 最后兜底：下一年元旦
+            const fallbackYear = thisYear + 1;
+            return { year: fallbackYear, target: new Date(fallbackYear, 0, 1, 0, 0, 0, 0) };
+        }
+
+        const elNow = document.getElementById('nowText');
+        const elTarget = document.getElementById('targetText');
+        const elStatus = document.getElementById('statusText');
+        const elDays = document.getElementById('days');
+        const elHours = document.getElementById('hours');
+        const elMinutes = document.getElementById('minutes');
+        const elSeconds = document.getElementById('seconds');
+        const btnCopy = document.getElementById('btnCopy');
+        const btnCopyPc = document.getElementById('btnCopyPc');
+        const elGreeting = document.getElementById('greeting');
+        const audioPrompt = document.getElementById('audioPrompt');
+        // const fireworksBtn = document.getElementById('fireworksBtn');
+        let audioUnlocked = false;
+
+        // 尝试自动解锁音频，失败了再显示按钮
+
+        function setCelebrationMode(on) {
+            document.body.classList.toggle('celebrate', !!on);
+            if (on) {
+                document.body.classList.remove('final5');
+                const elFinalCountdown = document.getElementById('finalCountdown');
+                if (elFinalCountdown) {
+                    elFinalCountdown.style.display = 'none';
+                    elFinalCountdown.textContent = '';
+                }
+            }
+
+            if (elGreeting) {
+                elGreeting.textContent = '春节快乐';
+            }
+        }
+
+        // 烟花
+        const fwCanvas = document.getElementById('fireworks');
+        const fwCtx = fwCanvas.getContext('2d', { alpha: true });
+        let fireworksStarted = false;
+        let fireworksRaf = 0;
+        let lastLaunchAt = 0;
+        let isTimeUp = false;
+        const particles = [];
+        const rockets = [];
+
+        // 音效：使用外部文件（仍需一次用户交互解锁）
+        const SFX_SHOOT = './audio/shoot.wav';
+        const SFX_BOMB = './audio/bomb.wav';
+        const SFX_TICK = './audio/DADADA.wav';
+
+        const shootPool = [];
+        let shootPoolIndex = 0;
+        const bombPool = [];
+        let bombPoolIndex = 0;
+        const tickPool = [];
+        let tickPoolIndex = 0;
+
+        function ensureAudioReady() {
+            const fillPool = (pool, src, size, volume) => {
+                if (pool.length) return;
+                for (let k = 0; k < size; k++) {
+                    const a = new Audio(src);
+                    a.preload = 'auto';
+                    a.volume = audioUnlocked ? volume : 0;
+                    a.muted = !audioUnlocked;
+                    pool.push(a);
+                }
+            };
+
+            fillPool(shootPool, SFX_SHOOT, 6, 0.22);
+            fillPool(bombPool, SFX_BOMB, 8, 0.34);
+            fillPool(tickPool, SFX_TICK, 4, 0.38);
+        }
+
+
+        // 点击按钮开启声音
+
+        // 页面加载时预加载音频（静音状态）
+        ensureAudioReady();
+
+        // 尝试自动解锁
+        // 烟花按钮点击事件：启动烟花动画
+        // 烟花按钮事件已移除
+
+        function resizeFireworks() {
+            const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+            fwCanvas.width = Math.floor(window.innerWidth * dpr);
+            fwCanvas.height = Math.floor(window.innerHeight * dpr);
+            fwCanvas.style.width = '100vw';
+            fwCanvas.style.height = '100vh';
+            fwCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function rand(min, max) {
+            return min + Math.random() * (max - min);
+        }
+
+        function burst(x, y, baseHue = rand(0, 360)) {
+            const count = Math.floor(rand(95, 150));
+            for (let i = 0; i < count; i++) {
+                const angle = rand(0, Math.PI * 2);
+                const speed = rand(2.6, 7.8);
+                particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 0,
+                    maxLife: rand(70, 120),
+                    size: rand(1.4, 2.8),
+                    hue: (baseHue + rand(-25, 25) + 360) % 360,
+                    alpha: 1
+                });
+            }
+        }
+
+        function playFromPool(pool, indexRef, volume) {
+            if (!pool.length) return;
+
+            const a = pool[indexRef.value % pool.length];
+            indexRef.value += 1;
+            try {
+                a.volume = volume;
+                a.muted = false;
+                a.pause();
+                try { a.currentTime = 0; } catch { }
+                const p = a.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(() => { /* ignore */ });
+                }
+            } catch {
+                // ignore
+            }
+        }
+
+        function playShoot() {
+            const idx = { value: shootPoolIndex };
+            playFromPool(shootPool, idx, 0.22);
+            shootPoolIndex = idx.value;
+        }
+
+        function playBomb(intensity = 1) {
+            const i = Math.max(0.5, Math.min(2.0, intensity));
+            const vol = Math.max(0.12, Math.min(0.85, 0.34 * i));
+            const idx = { value: bombPoolIndex };
+            playFromPool(bombPool, idx, vol);
+            bombPoolIndex = idx.value;
+        }
+
+        function playTick() {
+            const idx = { value: tickPoolIndex };
+            playFromPool(tickPool, idx, 0.38);
+            tickPoolIndex = idx.value;
+        }
+
+        function launchRocket() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const x = rand(w * 0.15, w * 0.85);
+            const y = h + 12;
+            const hue = rand(0, 360);
+            playShoot();
+            rockets.push({
+                x,
+                y,
+                vx: rand(-0.6, 0.6),
+                vy: rand(-12.2, -9.4),
+                targetY: rand(h * 0.16, h * 0.55),
+                life: 0,
+                maxLife: Math.floor(rand(70, 110)),
+                hue,
+                trail: []
+            });
+        }
+
+        function startFireworks() {
+            if (fireworksStarted) return;
+            fireworksStarted = true;
+            resizeFireworks();
+
+            // 放烟花时，“春节快乐”始终显示（并在未解锁时提示点击开启声音）
+            setCelebrationMode(true);
+
+            const tick = (t) => {
+                // 透明擦除形成拖尾：避免画布逐渐变成“不透明黑色”盖住下层文字
+                // destination-out 会降低已有像素 alpha，从而让画布保持透明
+                fwCtx.globalCompositeOperation = 'destination-out';
+                fwCtx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+                fwCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+                fwCtx.globalCompositeOperation = 'lighter';
+
+                // 发射火箭
+                if (!lastLaunchAt || t - lastLaunchAt > 380) {
+                    lastLaunchAt = t;
+                    // 更猛烈：每次发射 1-2 枚；同时做个上限避免卡顿
+                    if (rockets.length < 10) launchRocket();
+                    if (rockets.length < 10 && Math.random() < 0.65) launchRocket();
+                }
+
+                // 更新/绘制火箭（上升+拖尾）
+                for (let i = rockets.length - 1; i >= 0; i--) {
+                    const r = rockets[i];
+                    r.life += 1;
+                    r.vx *= 0.99;
+                    r.vy += 0.08; // 重力
+                    r.x += r.vx;
+                    r.y += r.vy;
+
+                    r.trail.push({ x: r.x, y: r.y, a: 1 });
+                    if (r.trail.length > 18) r.trail.shift();
+
+                    // 拖尾
+                    for (let j = 0; j < r.trail.length - 1; j++) {
+                        const p0 = r.trail[j];
+                        const p1 = r.trail[j + 1];
+                        const alpha = (j / (r.trail.length - 1)) * 0.55;
+                        fwCtx.strokeStyle = `hsla(${r.hue}, 95%, 70%, ${alpha})`;
+                        fwCtx.lineWidth = 2;
+                        fwCtx.beginPath();
+                        fwCtx.moveTo(p0.x, p0.y);
+                        fwCtx.lineTo(p1.x, p1.y);
+                        fwCtx.stroke();
+                    }
+
+                    // 火箭头
+                    fwCtx.fillStyle = `hsla(${r.hue}, 95%, 75%, 0.95)`;
+                    fwCtx.beginPath();
+                    fwCtx.arc(r.x, r.y, 2.2, 0, Math.PI * 2);
+                    fwCtx.fill();
+
+                    const reached = r.y <= r.targetY || r.life >= r.maxLife || r.vy > -1.2;
+                    if (reached) {
+                        // 双重爆炸：主爆 + 次爆（更猛烈）
+                        burst(r.x, r.y, r.hue);
+                        burst(r.x + rand(-12, 12), r.y + rand(-10, 10), (r.hue + rand(-18, 18) + 360) % 360);
+                        playBomb(1.15);
+                        rockets.splice(i, 1);
+                    }
+                }
+
+                // 粒子上限（避免设备性能差时无限增长）
+                if (particles.length > 2600) {
+                    particles.splice(0, particles.length - 2600);
+                }
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.life += 1;
+                    // 简单重力和阻尼
+                    p.vx *= 0.985;
+                    p.vy = p.vy * 0.985 + 0.03;
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    const k = p.life / p.maxLife;
+                    p.alpha = Math.max(0, 1 - k);
+
+                    if (p.alpha <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    fwCtx.fillStyle = `hsla(${p.hue}, 95%, 65%, ${p.alpha})`;
+                    fwCtx.beginPath();
+                    fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    fwCtx.fill();
+                }
+
+                fireworksRaf = requestAnimationFrame(tick);
+            };
+
+            // 先发两枚
+            launchRocket();
+            launchRocket();
+            launchRocket();
+            launchRocket();
+
+            fireworksRaf = requestAnimationFrame(tick);
+        }
+
+        function fireworkAt(x, y) {
+            // 双层爆炸更像“烟花”
+            const hue = rand(0, 360);
+            burst(x, y, hue);
+            burst(x + rand(-10, 10), y + rand(-8, 8), (hue + rand(-25, 25) + 360) % 360);
+            playBomb(1.0);
+        }
+
+        // 方便在控制台测试：startFireworks()
+        window.startFireworks = startFireworks;
+
+        // 点击位置生成烟花（不影响面板按钮操作）
+        function onUserClickFireworks(evt) {
+            // 只要在放烟花（或已到点进入庆祝）就允许点击生成烟花
+            if (!isTimeUp && !fireworksStarted) return;
+
+            const target = evt.target;
+            if (target && target.closest && target.closest('.panel')) return;
+            if (target && target.closest && target.closest('button')) return;
+
+            // 兜底：如果处于庆祝状态但动画还没启动，点击时补启动
+            if (!fireworksStarted) startFireworks();
+
+            const x = evt.clientX;
+            const y = evt.clientY;
+            if (typeof x !== 'number' || typeof y !== 'number') return;
+            fireworkAt(x, y);
+        }
+
+        window.addEventListener('pointerdown', onUserClickFireworks, { passive: true });
+
+        window.addEventListener('resize', () => {
+            if (!fireworksStarted) return;
+            resizeFireworks();
+        });
+
+        const elFinalCountdown = document.getElementById('finalCountdown');
+        let lastFinalSecond = null;
+        let finalTimer = 0;
+        let finalTargetTime = 0;
+        let previewMode = false;
+        const elHolidayInfo = document.getElementById('holidayInfo');
+
+        function setFinalCountdown(n) {
+            if (!elFinalCountdown) return;
+            if (!n || n <= 0) {
+                elFinalCountdown.style.display = 'none';
+                elFinalCountdown.textContent = '';
+                return;
+            }
+            elFinalCountdown.style.display = 'block';
+            elFinalCountdown.textContent = String(n);
+        }
+
+        function stopFinalCountdownLoop() {
+            if (finalTimer) clearInterval(finalTimer);
+            finalTimer = 0;
+            lastFinalSecond = null;
+            document.body.classList.remove('final5');
+            setFinalCountdown(0);
+        }
+
+        function startFinalCountdownLoop() {
+            if (finalTimer) return;
+
+            const tick = () => {
+                const diffMs = finalTargetTime - Date.now();
+                if (diffMs <= 0) {
+                    // 到点瞬间：直接进入庆祝并启动烟花，避免等待 render()（每秒一次）导致面板闪回
+                    isTimeUp = true;
+                    setCelebrationMode(true);
+                    startFireworks();
+                    stopFinalCountdownLoop();
+                    return;
+                }
+
+                const secondsLeft = Math.ceil(diffMs / 1000);
+                if (secondsLeft > 10) {
+                    stopFinalCountdownLoop();
+                    return;
+                }
+
+                document.body.classList.add('final5');
+                setFinalCountdown(secondsLeft);
+                if (lastFinalSecond !== secondsLeft) {
+                    lastFinalSecond = secondsLeft;
+                    playTick();
+                }
+            };
+
+            // 20ms 粒度足够对齐到“每个数字约 1s”且不重
+            finalTimer = setInterval(tick, 20);
+            tick();
+        }
+
+        function render() {
+            var now = new Date();
+            // 判断是否为春节当天（0点到23:59:59）
+            var isSpringDay = false, year, target, springDateStrLocal, springDate, pick;
+            springDateStrLocal = getSpringFestivalDate(now.getFullYear());
+            if (springDateStrLocal) {
+                springDate = parseLocalMidnight(springDateStrLocal);
+                if (now.getTime() >= springDate.getTime() && now.getTime() < springDate.getTime() + 86400000) {
+                    isSpringDay = true;
+                    year = now.getFullYear();
+                    target = springDate;
+                } else {
+                    pick = pickNextTarget(now);
+                    year = pick.year;
+                    target = pick.target;
+                }
+            } else {
+                pick = pickNextTarget(now);
+                year = pick.year;
+                target = pick.target;
+            }
+
+            // 春节当天，完全不显示倒计时相关内容，防止闪现
+            if (isSpringDay) {
+                var panel = document.querySelector('.panel');
+                var header = document.querySelector('.header');
+                var note = document.querySelector('.muted.note');
+                if (panel) panel.style.display = 'none';
+                if (header) header.style.display = 'none';
+                if (note) note.style.display = 'none';
+                // 判断是否为0点
+                var nowHour = now.getHours();
+                var nowMin = now.getMinutes();
+                var nowSec = now.getSeconds();
+                // 只在非0点且非倒计时跳转进入时显示弹窗
+                var fromCountdown = sessionStorage.getItem('fromCountdown') === '1';
+                if (!sessionStorage.getItem('springPopupClosed') && !(nowHour === 0 && nowMin === 0) && !fromCountdown) {
+                    fireworkReadyModal.style.display = '';
+                    var fwText = document.getElementById('fireworkReadyText');
+                    if (fwText) {
+                        fwText.textContent = '春节快乐';
+                        fwText.style.color = '#DC143C'; // 红色
+                    }
+                    var dialog = document.getElementById('fireworkReadyDialog');
+                    if (dialog) {
+                        dialog.style.background = '#222'; // 黑底
+                        dialog.style.color = '#fff';
+                    }
+                } else {
+                    fireworkReadyModal.style.display = 'none';
+                }
+                // 启动烟花动画
+                startFireworks();
+                // 直接返回，后续倒计时内容不再渲染
+                return;
+            } else {
+                // 其余弹窗恢复主面板风格
+                var dialog = document.getElementById('fireworkReadyDialog');
+                if (dialog) {
+                    dialog.style.background = 'rgba(255,255,255,0.06)';
+                    dialog.style.color = '#fff';
+                }
+                // 非春节当天才显示倒计时相关内容
+                var panel = document.querySelector('.panel');
+                var header = document.querySelector('.header');
+                var note = document.querySelector('.muted.note');
+                if (panel) panel.style.display = '';
+                if (header) header.style.display = '';
+                if (note) note.style.display = '';
+            }
+
+            elNow.textContent = `现在：${formatDateTime(now)}`;
+            document.title = isSpringDay ? '春节快乐' : '春节倒计时';
+            elTarget.textContent = `${year} 年春节：${formatDateOnly(target)}`;
+
+            // 预览模式下，由 previewEffect() 接管 UI / 音效 / 状态，避免被 render() 覆盖
+            if (previewMode) {
+                return;
+            }
+
+            const diffMs = target.getTime() - now.getTime();
+            // 30秒弹窗提示
+            if (!fireworkReadyShown && diffMs > 0 && diffMs <= 30000) {
+                fireworkReadyModal.style.display = '';
+                fireworkReadyShown = true;
+            }
+
+            if (isSpringDay) {
+                isTimeUp = true;
+                stopFinalCountdownLoop();
+                setCelebrationMode(true);
+                const fb = document.getElementById('fireworksBtn');
+                if (fb && fb.classList) fb.classList.add('hidden');
+                elDays.textContent = '0';
+                elHours.textContent = '00';
+                elMinutes.textContent = '00';
+                elSeconds.textContent = '00';
+                elStatus.textContent = '春节快乐！';
+                // 春节当天弹窗改为红色“春节快乐”
+                const fwText = document.getElementById('fireworkReadyText');
+                if (fwText) {
+                    fwText.textContent = '春节快乐';
+                    fwText.style.color = '#DC143C';
+                }
+                startFireworks();
+                return;
+            } else {
+                // 恢复倒计时面板和说明显示
+                document.querySelector('.panel').style.display = '';
+                document.querySelector('.header').style.display = '';
+                document.querySelector('.muted.note').style.display = '';
+            }
+            if (diffMs <= 0) return;
+            isTimeUp = false;
+            // 如果烟花在跑（例如预览/手动启动），就保持“春节快乐”常显
+            if (fireworksStarted) {
+                setCelebrationMode(true);
+            } else {
+                setCelebrationMode(false);
+            }
+
+            // 最后 10 秒：隐藏原倒计时面板，只显示大数字；每秒响一下
+            if (diffMs > 0 && diffMs <= 10000) {
+                finalTargetTime = target.getTime();
+                startFinalCountdownLoop();
+            } else if (diffMs > 10000 && diffMs <= 11000) {
+                // 第 11 秒：隐藏面板但不显示倒计时，预加载
+                finalTargetTime = target.getTime();
+                document.body.classList.add('final5');
+            } else {
+                stopFinalCountdownLoop();
+            }
+
+            const totalSeconds = Math.floor(diffMs / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            elDays.textContent = String(days);
+            elHours.textContent = pad2(hours);
+            elMinutes.textContent = pad2(minutes);
+            elSeconds.textContent = pad2(seconds);
+
+            elStatus.textContent = '';
+
+            // 更新节气 / 节日 显示（优先显示节日列表）
+            try {
+                if (window.solarlunar && typeof window.solarlunar.solarToLunar === 'function') {
+                    const lunar = window.solarlunar.solarToLunar(now.getFullYear(), now.getMonth() + 1, now.getDate());
+                    let lunarStr = '';
+                    if (lunar) {
+                        lunarStr = `农历时间：${lunar.year}年${lunar.monthStr}${lunar.dayStr}`;
+                    }
+                    let festList = [];
+                    if (typeof window.solarlunar.getFestivals === 'function') {
+                        festList = window.solarlunar.getFestivals(now.getFullYear(), now.getMonth() + 1, now.getDate()) || [];
+                    }
+                    // 补充节气（如果未被节日覆盖）
+                    if (festList.length === 0 && typeof window.solarlunar.getSolarTerm === 'function') {
+                        const term = window.solarlunar.getSolarTerm(now.getFullYear(), now.getMonth() + 1, now.getDate());
+                        if (term) festList.push(term);
+                    }
+                    if (lunarStr) {
+                        elHolidayInfo.textContent = festList.length ? `${lunarStr} ${festList.join(' ')}` : lunarStr;
+                    } else {
+                        elHolidayInfo.textContent = festList.length ? `${festList.join(' ')}` : '';
+                    }
+                }
+            } catch (e) {
+                console.warn('更新节气/节日信息失败', e);
+            }
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            }
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                document.execCommand('copy');
+            } finally {
+                document.body.removeChild(ta);
+            }
+            return Promise.resolve();
+        }
+
+        // 记录是否从倒计时跳转进入春节
+        if (typeof sessionStorage !== 'undefined') {
+            var now = new Date();
+            var springDateStrLocal = getSpringFestivalDate(now.getFullYear());
+            var springDate = parseLocalMidnight(springDateStrLocal);
+            var isSpringDay = false;
+            if (springDate && now.getTime() >= springDate.getTime() && now.getTime() < springDate.getTime() + 86400000) {
+                // 如果是0点整进入，设置fromCountdown=1
+                if (now.getHours() === 0 && now.getMinutes() === 0) {
+                    sessionStorage.setItem('fromCountdown', '1');
+                }
+            } else {
+                sessionStorage.removeItem('fromCountdown');
+            }
+        }
+
+        btnCopy.addEventListener('click', async () => {
+            // 复制倒计时详细内容
+            const days = document.getElementById('days').textContent;
+            const hours = document.getElementById('hours').textContent;
+            const minutes = document.getElementById('minutes').textContent;
+            const seconds = document.getElementById('seconds').textContent;
+            const target = document.getElementById('targetText').textContent;
+            const text = `${target}\n剩余：${days}天${hours}小时${minutes}分钟${seconds}秒`;
+            try {
+                await copyText(text);
+                const copyStatus = document.getElementById('copyStatus');
+                if (copyStatus) {
+                    copyStatus.style.display = 'block';
+                    setTimeout(() => {
+                        copyStatus.style.display = 'none';
+                    }, 1200);
+                }
+            } catch {
+                // ignore
+            }
+        });
+        const btnCopyPcElem = document.getElementById('btnCopyPc');
+        if (btnCopyPcElem) {
+            btnCopyPcElem.addEventListener('click', async () => {
+                // 复制倒计时详细内容
+                const days = document.getElementById('days').textContent;
+                const hours = document.getElementById('hours').textContent;
+                const minutes = document.getElementById('minutes').textContent;
+                const seconds = document.getElementById('seconds').textContent;
+                const target = document.getElementById('targetText').textContent;
+                const text = `${target}\n剩余：${days}天${hours}小时${minutes}分钟${seconds}秒`;
+                try {
+                    await copyText(text);
+                    const copyStatusPc = document.getElementById('copyStatusPc');
+                    if (copyStatusPc) {
+                        copyStatusPc.style.display = '';
+                        setTimeout(() => {
+                            copyStatusPc.style.display = 'none';
+                        }, 1200);
+                    }
+                } catch {
+                    // ignore
+                }
+            });
+        }
+
+        render();
+        setInterval(render, 1000);
+
+        // 预览函数：演示“5 秒倒计时 + 背景音乐 + 发射 + 爆炸”
+        // 使用方式：在控制台输入 previewEffect()
+        window.previewEffect = async function previewEffect() {
+            // 演示：把目标设为 5 秒后，复用同一套“final5”显示逻辑
+            previewMode = true;
+            stopFinalCountdownLoop();
+            isTimeUp = false;
+            setCelebrationMode(false);
+            finalTargetTime = Date.now() + 5000;
+            startFinalCountdownLoop();
+
+            setTimeout(() => {
+                // 进入“到点”状态并开始放烟花
+                isTimeUp = true;
+                setCelebrationMode(true);
+                startFireworks();
+                // 立刻来一发爆炸（可听 bomb）
+                fireworkAt(window.innerWidth * 0.5, window.innerHeight * 0.35);
+                // 预览结束后交还 render() 控制
+                setTimeout(() => {
+                    previewMode = false;
+                }, 300);
+            }, 5050);
+        };
+    </script>
+</body>
+
+</html>
