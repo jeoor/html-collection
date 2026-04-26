@@ -32,11 +32,11 @@ export const siteConfig = {
         meta: "Tetris",
       },
       dino: {
-        title: "Chrome 小恐龙",
+        title: "谷歌小恐龙",
         meta: "Chrome Dino",
       },
       huaji: {
-        title: "Squishy Bird",
+        title: "压扁滑稽",
         meta: "Flappy-style",
       },
     },
