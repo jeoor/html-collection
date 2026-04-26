@@ -8,12 +8,12 @@ export const sections = [
         "href": "/tetris/"
       },
       {
-        "title": "Chrome 小恐龙",
+        "title": "谷歌小恐龙",
         "meta": "Chrome Dino",
         "href": "/dino/"
       },
       {
-        "title": "Squishy Bird",
+        "title": "压扁滑稽",
         "meta": "Flappy-style",
         "href": "/huaji/"
       }
