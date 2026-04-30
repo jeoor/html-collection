@@ -14,7 +14,10 @@ const { title, items } = Astro.props;
 ---
 
 <section class="section">
-  <h2 class="section-title">{title}</h2>
+  <h2 class="section-title">
+    {title}
+    <span class="section-count">{items.length}</span>
+  </h2>
   <nav class="list" aria-label={title}>
     {items.map((item) => (
       <a class="item" href={item.href}>
