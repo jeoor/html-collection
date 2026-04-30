@@ -36,6 +36,11 @@ export const sections = [
         "title": "元素周期表",
         "meta": "Periodic Table",
         "href": "/yuansu/"
+      },
+      {
+        "title": "发疯人格测试",
+        "meta": "FFTI",
+        "href": "/ffti/"
       }
     ]
   },

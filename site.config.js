@@ -53,6 +53,10 @@ export const siteConfig = {
         title: "元素周期表",
         meta: "Periodic Table",
       },
+      ffti: {
+        title: "发疯人格测试",
+        meta: "FFTI",
+      },
     },
     休闲娱乐: {
       shuitong: {

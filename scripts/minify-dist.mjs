@@ -92,7 +92,7 @@ for (const file of files) {
     continue;
   }
 
-  if (![".html", ".css", ".js", ".xml"].includes(ext)) {
+  if (![".html", ".css", ".js", ".xml", ".json"].includes(ext)) {
     continue;
   }
 
@@ -105,6 +105,9 @@ for (const file of files) {
     await minifyCssFile(file);
   } else if (ext === ".js") {
     await minifyJsFile(file);
+  } else if (ext === ".json") {
+    const source = await readFile(file, "utf8");
+    await writeFile(file, JSON.stringify(JSON.parse(source)), "utf8");
   } else if (ext === ".xml") {
     const source = await readFile(file, "utf8");
     await writeFile(file, source.replace(/>\s+</g, "><").trim(), "utf8");
