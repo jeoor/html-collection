@@ -49,6 +49,11 @@
       "source": "/yuansu",
       "destination": "/yuansu/",
       "statusCode": 302
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-index.xml",
+      "statusCode": 302
     }
   ]
 }

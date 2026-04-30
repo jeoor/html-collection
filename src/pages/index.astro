@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import WorkSection from "../components/WorkSection.astro";
+import { siteConfig } from "../../site.config.js";
+import "../styles/global.css";
+
+const sections = Object.entries(siteConfig.works).map(([title, works]) => ({
+  title,
+  items: Object.entries(works).map(([slug, config]) => ({
+    title: config.title,
+    meta: config.meta,
+    href: `/${slug}/`,
+  })),
+}));
+---
+
+<BaseLayout>
+  <main class="page">
+    <header class="page-header">
+      <h1 class="page-title">{siteConfig.name}</h1>
+    </header>
+
+    {sections.map((section) => (
+      <WorkSection title={section.title} items={section.items} />
+    ))}
+
+    <footer class="footer">
+      <p>{siteConfig.footer.copyright}</p>
+      <p class="footer-links">
+        {siteConfig.footer.links.map((link) => (
+          <a href={link.href} rel="noreferrer noopener" target="_blank">
+            {link.text}
+          </a>
+        ))}
+      </p>
+    </footer>
+  </main>
+</BaseLayout>

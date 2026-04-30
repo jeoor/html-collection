@@ -1,8 +1,10 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
 import { createReadStream, existsSync } from "node:fs";
 import { join, normalize, sep } from "node:path";
 import { siteConfig } from "./site.config.js";
+
+const siteUrl = siteConfig.siteUrl.replace(/\/$/, "");
 
 function cleanStaticRoutes() {
   const publicDir = join(process.cwd(), "public");
@@ -30,7 +32,12 @@ function cleanStaticRoutes() {
 
     if (!pathname.endsWith("/")) {
       res.statusCode = 302;
-      res.setHeader("Location", `${pathname}/${req.url.includes("?") ? `?${req.url.split("?")[1]}` : ""}`);
+      res.setHeader(
+        "Location",
+        `${pathname}/${
+          req.url.includes("?") ? `?${req.url.split("?")[1]}` : ""
+        }`
+      );
       res.end();
       return;
     }
@@ -52,31 +59,19 @@ function cleanStaticRoutes() {
 }
 
 export default defineConfig({
-  plugins: [
-    cleanStaticRoutes(),
-    react(),
-    {
-      name: "site-config-html",
-      transformIndexHtml(html) {
-        return html
-          .replaceAll("__SITE_TITLE__", siteConfig.title)
-          .replaceAll("__SITE_DESCRIPTION__", siteConfig.description)
-          .replaceAll("__SITE_KEYWORDS__", siteConfig.keywords)
-          .replaceAll("__SITE_AUTHOR__", siteConfig.author)
-          .replaceAll("__SITE_URL__", siteConfig.siteUrl.replace(/\/$/, ""))
-          .replaceAll("__SITE_FAVICON__", siteConfig.favicon);
-      },
-    },
+  site: siteUrl,
+  output: "static",
+  trailingSlash: "always",
+  vite: {
+    plugins: [cleanStaticRoutes()],
+  },
+  integrations: [
+    sitemap({
+      customPages: Object.keys(siteConfig.works).flatMap((category) =>
+        Object.keys(siteConfig.works[category]).map(
+          (slug) => `${siteUrl}/${slug}/`
+        )
+      ),
+    }),
   ],
-  define: {
-    __SITE_CONFIG__: JSON.stringify(siteConfig),
-  },
-  envPrefix: ["VITE_"],
-  server: {
-    host: "0.0.0.0",
-  },
-  build: {
-    outDir: "dist",
-    emptyOutDir: true,
-  },
 });

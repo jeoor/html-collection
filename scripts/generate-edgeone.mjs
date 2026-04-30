@@ -30,11 +30,18 @@ try {
 slugs.sort((a, b) => a.localeCompare(b));
 
 const config = {
-  redirects: slugs.map((slug) => ({
-    source: `/${slug}`,
-    destination: `/${slug}/`,
-    statusCode: 302,
-  })),
+  redirects: [
+    ...slugs.map((slug) => ({
+      source: `/${slug}`,
+      destination: `/${slug}/`,
+      statusCode: 302,
+    })),
+    {
+      source: "/sitemap.xml",
+      destination: "/sitemap-index.xml",
+      statusCode: 302,
+    },
+  ],
 };
 
 await writeFile(join(root, "edgeone.json"), JSON.stringify(config, null, 2) + "\n", "utf8");
