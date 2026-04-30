@@ -1,0 +1,54 @@
+{
+  "redirects": [
+    {
+      "source": "/code-rain",
+      "destination": "/code-rain/",
+      "statusCode": 302
+    },
+    {
+      "source": "/dino",
+      "destination": "/dino/",
+      "statusCode": 302
+    },
+    {
+      "source": "/ffti",
+      "destination": "/ffti/",
+      "statusCode": 302
+    },
+    {
+      "source": "/huaji",
+      "destination": "/huaji/",
+      "statusCode": 302
+    },
+    {
+      "source": "/jiazigu",
+      "destination": "/jiazigu/",
+      "statusCode": 302
+    },
+    {
+      "source": "/shuitong",
+      "destination": "/shuitong/",
+      "statusCode": 302
+    },
+    {
+      "source": "/spring",
+      "destination": "/spring/",
+      "statusCode": 302
+    },
+    {
+      "source": "/tetris",
+      "destination": "/tetris/",
+      "statusCode": 302
+    },
+    {
+      "source": "/time-compass",
+      "destination": "/time-compass/",
+      "statusCode": 302
+    },
+    {
+      "source": "/yuansu",
+      "destination": "/yuansu/",
+      "statusCode": 302
+    }
+  ]
+}

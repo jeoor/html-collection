@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/generate-works.mjs && vite --host 0.0.0.0",
-    "build": "node scripts/generate-works.mjs && vite build && node scripts/generate-sitemap.mjs && node scripts/minify-dist.mjs",
+    "build": "node scripts/generate-works.mjs && node scripts/generate-edgeone.mjs && vite build && node scripts/generate-sitemap.mjs && node scripts/minify-dist.mjs",
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
