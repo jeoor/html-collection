@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
-    "build:ffti": "node scripts/build-ffti.mjs",
-    "build": "npm run build:ffti && astro build && node scripts/minify-dist.mjs && node scripts/generate-edgeone.mjs",
+    "build:app": "node scripts/build-subapp.mjs",
+    "build:apps": "npm run build:app -- --all",
+    "build": "npm run build:apps && astro build && node scripts/minify-dist.mjs && node scripts/generate-edgeone.mjs",
     "preview": "astro preview --host 0.0.0.0"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
-    "astro": "^6.1.10"
+    "astro": "^6.3.3"
   },
   "devDependencies": {
     "clean-css": "^5.3.3",

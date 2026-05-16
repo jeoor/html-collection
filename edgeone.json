@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/cat-survivors",
+      "destination": "/cat-survivors/",
+      "statusCode": 302
+    },
+    {
       "source": "/code-rain",
       "destination": "/code-rain/",
       "statusCode": 302

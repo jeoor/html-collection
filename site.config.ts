@@ -1,4 +1,29 @@
-export const siteConfig = {
+export interface WorkEntry {
+  title: string;
+  meta: string;
+}
+
+export interface FooterLink {
+  text: string;
+  href: string;
+}
+
+export interface SiteConfig {
+  siteUrl: string;
+  title: string;
+  name: string;
+  description: string;
+  keywords: string;
+  author: string;
+  favicon: string;
+  footer: {
+    copyright: string;
+    links: FooterLink[];
+  };
+  works: Record<string, Record<string, WorkEntry>>;
+}
+
+export const siteConfig: SiteConfig = {
   siteUrl: "https://fun.kayro.cn",
   title: "敖苛的HTML收藏 | 在线小游戏和工具",
   name: "敖苛的HTML收藏",
@@ -70,6 +95,12 @@ export const siteConfig = {
       jiazigu: {
         title: "架子鼓",
         meta: "Drum Kit",
+      },
+    },
+    JS13K: {
+      "cat-survivors": {
+        title: "猫咪幸存者",
+        meta: "Cat Survivors | 2025",
       },
     },
   },

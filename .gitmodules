@@ -1,3 +1,9 @@
 [submodule "apps/ffti"]
 	path = apps/ffti
 	url = https://github.com/jeoor/FFTI.git
+[submodule "apps/cat-survivors"]
+	path = apps/cat-survivors
+	url = https://github.com/jeoor/cat-survivors.git
+[submodule "apps/react-tetris"]
+	path = apps/react-tetris
+	url = https://github.com/jeoor/react-tetris.git

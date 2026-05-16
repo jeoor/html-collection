@@ -2,14 +2,19 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import { createReadStream, existsSync } from "node:fs";
 import { join, normalize, sep } from "node:path";
-import { siteConfig } from "./site.config.js";
+import type { Connect, Plugin, PreviewServer, ViteDevServer } from "vite";
+import { siteConfig } from "./site.config";
 
 const siteUrl = siteConfig.siteUrl.replace(/\/$/, "");
 
-function cleanStaticRoutes() {
+function cleanStaticRoutes(): Plugin {
   const publicDir = join(process.cwd(), "public");
 
-  function serveCleanRoute(req, res, next) {
+  function serveCleanRoute(
+    req: Connect.IncomingMessage,
+    res: import("node:http").ServerResponse,
+    next: Connect.NextFunction
+  ) {
     if (!req.url || req.method !== "GET") {
       next();
       return;
@@ -49,10 +54,10 @@ function cleanStaticRoutes() {
 
   return {
     name: "clean-static-routes",
-    configureServer(server) {
+    configureServer(server: ViteDevServer) {
       server.middlewares.use(serveCleanRoute);
     },
-    configurePreviewServer(server) {
+    configurePreviewServer(server: PreviewServer) {
       server.middlewares.use(serveCleanRoute);
     },
   };
