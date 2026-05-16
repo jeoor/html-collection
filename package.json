@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
-    "build": "astro build && node scripts/minify-dist.mjs && node scripts/generate-edgeone.mjs",
+    "build:ffti": "node scripts/build-ffti.mjs",
+    "build": "npm run build:ffti && astro build && node scripts/minify-dist.mjs && node scripts/generate-edgeone.mjs",
     "preview": "astro preview --host 0.0.0.0"
   },
   "dependencies": {

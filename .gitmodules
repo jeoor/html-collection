@@ -1,0 +1,3 @@
+[submodule "apps/ffti"]
+	path = apps/ffti
+	url = https://github.com/jeoor/FFTI.git
