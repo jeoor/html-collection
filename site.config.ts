@@ -96,6 +96,10 @@ export const siteConfig: SiteConfig = {
         title: "架子鼓",
         meta: "Drum Kit",
       },
+      donut: {
+        title: "3D甜甜圈",
+        meta: "3D Donut",
+      },
     },
     JS13K: {
       "cat-survivors": {

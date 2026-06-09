@@ -8,6 +8,12 @@ import { optimize as optimizeSVG } from "svgo";
 const root = process.cwd();
 const distDir = join(root, "dist");
 
+// 排除项：匹配路径中包含这些字符串的文件/目录会被跳过
+const exclude = [
+  "donut/",
+  // "some-file.js",
+];
+
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
   const files = [];
@@ -28,6 +34,9 @@ async function walk(dir) {
 const cleanCss = new CleanCSS({ level: 2 });
 
 async function minifyFile(path) {
+  const relativePath = path.replace(distDir, "").replace(/^[\\/]/, "");
+  if (exclude.some((pattern) => relativePath.includes(pattern))) return;
+
   const ext = path.slice(path.lastIndexOf(".")).toLowerCase();
   const source = await readFile(path, "utf8");
   let result;
